@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:infinite_listview/infinite_listview.dart';
 
+typedef Mapper = String Function(int value);
 typedef TextMapper = String Function(String numberText);
 
 class NumberPicker extends StatefulWidget {
@@ -39,11 +40,17 @@ class NumberPicker extends StatefulWidget {
   /// Style of non-selected numbers. If null, it uses Theme's bodyText2
   final TextStyle? textStyle;
 
-  /// Style of non-selected numbers. If null, it uses Theme's headline5 with accentColor
+  /// Style of selected numbers. If null, it uses Theme's headline5 with accentColor
   final TextStyle? selectedTextStyle;
+  
+  /// Background color of selected numbers.
+  final Color? selectedBgColor;
 
   /// Whether to trigger haptic pulses or not
   final bool haptics;
+
+  /// Build the text of each item on the picker
+  final Mapper? mapper;
 
   /// Build the text of each item on the picker
   final TextMapper? textMapper;
@@ -69,9 +76,11 @@ class NumberPicker extends StatefulWidget {
     this.axis = Axis.vertical,
     this.textStyle,
     this.selectedTextStyle,
+    this.selectedBgColor,
     this.haptics = false,
     this.decoration,
     this.zeroPad = false,
+    this.mapper,
     this.textMapper,
     this.infiniteLoop = false,
   })  : assert(minValue <= value),
@@ -203,7 +212,8 @@ class _NumberPickerState extends State<NumberPicker> {
     final isExtra = !widget.infiniteLoop &&
         (index < additionalItemsOnEachSide ||
             index >= listItemsCount - additionalItemsOnEachSide);
-    final itemStyle = value == widget.value ? selectedStyle : defaultStyle;
+    final selected = value == widget.value;
+    final itemStyle = selected ? selectedStyle : defaultStyle;
 
     final child = isExtra
         ? SizedBox.shrink()
@@ -217,10 +227,13 @@ class _NumberPickerState extends State<NumberPicker> {
       height: widget.itemHeight,
       alignment: Alignment.center,
       child: child,
+      color: !selected ? null : widget.selectedBgColor,
     );
   }
 
   String _getDisplayedValue(int value) {
+    if (widget.mapper != null) return widget.mapper!(value);
+    
     final text = widget.zeroPad
         ? value.toString().padLeft(widget.maxValue.toString().length, '0')
         : value.toString();

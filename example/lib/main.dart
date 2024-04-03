@@ -54,7 +54,19 @@ class _IntegerExample extends StatefulWidget {
   __IntegerExampleState createState() => __IntegerExampleState();
 }
 
+const items = <String>[
+  "Parent",
+  "Educator",
+  "Student",
+  "Athlete",
+  "Coach",
+  "Trainer",
+  "Health Professional",
+  "Other",
+];
+
 class __IntegerExampleState extends State<_IntegerExample> {
+  int _currentSelectedIdx = 0;
   int _currentIntValue = 10;
   int _currentHorizontalIntValue = 10;
 
@@ -63,6 +75,35 @@ class __IntegerExampleState extends State<_IntegerExample> {
     return Column(
       children: <Widget>[
         SizedBox(height: 16),
+        Text('Text', style: TextStyle(color: Colors.lightBlue, fontSize: 32)),
+        Container(
+          width: 300,
+          height: 4,
+          color: Colors.lightBlue,
+        ),
+        NumberPicker(
+          value: _currentSelectedIdx,
+          minValue: 0,
+          maxValue: items.length - 1,
+          step: 1,
+          haptics: true,
+          onChanged: (idx) => setState(() => _currentSelectedIdx = idx),
+          mapper: (idx) => items[idx],
+          itemWidth: 300,
+          textStyle: TextStyle(fontSize: 16),
+          selectedTextStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.lightBlue,
+          ),
+          //selectedBgColor: Colors.grey.withOpacity(0.9),
+        ),
+        Container(
+          width: 300,
+          height: 4,
+          color: Colors.lightBlue,
+        ),
+        SizedBox(height: 32),
         Text('Default', style: Theme.of(context).textTheme.headline6),
         NumberPicker(
           value: _currentIntValue,
